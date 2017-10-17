@@ -14,7 +14,7 @@
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS “AS IS” AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* Last build : 2017-10-17_12:54:36 / git revision : 35159b1 */
+/* Last build : 2017-10-17_12:57:44 / git revision : b85e6c6 */
 
 (function(root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -71,8 +71,8 @@ MediaPlayer = function () {
     ////////////////////////////////////////// PRIVATE ////////////////////////////////////////////
     var VERSION_DASHJS = '1.2.0',
         VERSION = '1.13.0-dev',
-        GIT_TAG = '35159b1',
-        BUILD_DATE = '2017-10-17_12:54:36',
+        GIT_TAG = 'b85e6c6',
+        BUILD_DATE = '2017-10-17_12:57:44',
         context = new MediaPlayer.di.Context(), // default context
         system = new dijon.System(), // dijon system instance
         initialized = false,
@@ -17058,6 +17058,12 @@ Dash.dependencies.DashManifestExtensions = function() {
 Dash.dependencies.DashManifestExtensions.prototype = {
     constructor: Dash.dependencies.DashManifestExtensions,
 
+    isInteger: Number.isInteger || function (value) {
+        return typeof value === 'number' &&
+            isFinite(value) &&
+            Math.floor(value) === value;
+    },
+
     getIsType: function(adaptation, type, mimeTypes) {
         "use strict";
         var i, j,
@@ -17453,7 +17459,7 @@ Dash.dependencies.DashManifestExtensions.prototype = {
 
     getBandwidth: function(representation) {
         "use strict";
-        return representation.bandwidth;
+        return representation && representation.bandwidth ? representation.bandwidth : NaN;
     },
 
     getRefreshDelay: function(manifest) {
@@ -17479,7 +17485,8 @@ Dash.dependencies.DashManifestExtensions.prototype = {
 
     getRepresentationFor: function(index, data) {
         "use strict";
-        return data.Representation_asArray[index];
+        return data && data.Representation_asArray && data.Representation_asArray.length > 0 &&
+            this.isInteger(index) && index < data.Representation_asArray.length ? data.Representation_asArray[index] : null;
     },
 
     getRepresentationsForAdaptation: function(manifest, adaptation) {
